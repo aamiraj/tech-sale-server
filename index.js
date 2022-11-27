@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const port = 5000 || process.env.PORT;
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 app.use(cors());
@@ -15,7 +15,7 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
-function getCategory(brand){
+function getCategory(brand) {
   switch (brand) {
     case "HP":
       return "1";
@@ -38,7 +38,7 @@ function getCategory(brand){
     default:
       return "0";
   }
-};
+}
 
 //console.log(getCategory("Apple"))
 
@@ -51,11 +51,17 @@ async function main() {
     const laptopsCollection = db.collection("sellingLaptops");
     const usersCollection = db.collection("users");
 
-    app.get("/products", async(req, res)=>{
-      const query = {email: req.query.email}
+    app.delete("/products", async (req, res) => {
+      const query = { _id: ObjectId(req.query.id) };
+      const result = await laptopsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.get("/products", async (req, res) => {
+      const query = { email: req.query.email };
       const laptopsByUser = await laptopsCollection.find(query).toArray();
-      res.send(laptopsByUser)
-    })
+      res.send(laptopsByUser);
+    });
 
     app.post("/products", async (req, res) => {
       const {
@@ -69,7 +75,7 @@ async function main() {
         originalPrice,
         yearsOfUse,
         postedTime,
-        verifiedUser
+        verifiedUser,
       } = req.body;
 
       const doc = {
