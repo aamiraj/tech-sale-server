@@ -22,6 +22,31 @@ async function main() {
     const db = client.db(dbName);
     const categoriesCollection = db.collection("categories");
     const laptopsCollection = db.collection("laptops");
+    const usersCollection = db.collection("users");
+
+    app.get('/users', async (req, res)=>{
+      const email = req.query.email
+      const query = {email:email}
+      
+      const result = await usersCollection.findOne(query)
+      
+      res.send(result)
+    })
+
+    app.post("/users", async (req, res) => {
+      const { name, email, role } = req.body;
+
+      const doc = {
+        name: name,
+        email: email,
+        role: role,
+        verified: false
+      };
+
+    const result = await usersCollection.insertOne(doc)
+      
+    res.send(result);
+    });
 
     app.get("/categories/:id", async (req, res) => {
       const query = { categoryId: req.params.id };
