@@ -51,6 +51,19 @@ async function main() {
     const laptopsCollection = db.collection("sellingLaptops");
     const usersCollection = db.collection("users");
 
+    app.patch("/products", async (req, res) => {
+      const filter = {_id: ObjectId(req.query.id)}
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          advertised: true
+        },
+      };
+      const result = await laptopsCollection.updateOne(filter, updateDoc, options)
+      
+      res.send(result);
+    });
+
     app.delete("/products", async (req, res) => {
       const query = { _id: ObjectId(req.query.id) };
       const result = await laptopsCollection.deleteOne(query);
