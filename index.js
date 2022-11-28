@@ -52,15 +52,19 @@ async function main() {
     const usersCollection = db.collection("users");
 
     app.patch("/products", async (req, res) => {
-      const filter = {_id: ObjectId(req.query.id)}
+      const filter = { _id: ObjectId(req.query.id) };
       const options = { upsert: true };
       const updateDoc = {
         $set: {
-          advertised: true
+          advertised: true,
         },
       };
-      const result = await laptopsCollection.updateOne(filter, updateDoc, options)
-      
+      const result = await laptopsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+
       res.send(result);
     });
 
@@ -119,10 +123,25 @@ async function main() {
     });
 
     app.get("/users", async (req, res) => {
-      const email = req.query.email;
-      const query = { email: email };
+      let result;
+      if (req.query.email) {
+        const email = req.query.email;
+        const query = { email: email };
 
-      const result = await usersCollection.findOne(query);
+        result = await usersCollection.findOne(query);
+      } else if (req.query.role === "buyer") {
+        const role = req.query.role;
+        const query = { role: role };
+
+        result = await usersCollection.find(query).toArray();
+      } else if (req.query.role === "seller") {
+        const role = req.query.role;
+        const query = { role: role };
+
+        result = await usersCollection.find(query).toArray();
+      } else {
+        result = await usersCollection.find({}).toArray();
+      }
 
       res.send(result);
     });
