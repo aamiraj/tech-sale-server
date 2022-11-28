@@ -58,7 +58,15 @@ async function main() {
     });
 
     app.get("/products", async (req, res) => {
-      const query = { email: req.query.email };
+      let query;
+      if (req.query.email) {
+        query = { email: req.query.email };
+      } else if (req.query.advertised) {
+        query = { advertised: true };
+      } else {
+        query = {};
+      }
+
       const laptopsByUser = await laptopsCollection.find(query).toArray();
       res.send(laptopsByUser);
     });
@@ -92,7 +100,7 @@ async function main() {
         brand: brand,
         email: email,
       };
-      console.log(doc);
+      //console.log(doc);
       const result = await laptopsCollection.insertOne(doc);
       res.send(result);
     });
