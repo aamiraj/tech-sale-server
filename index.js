@@ -122,6 +122,12 @@ async function main() {
       res.send(result);
     });
 
+    app.delete("/users", async (req, res) => {
+      const query = { _id: ObjectId(req.query.id) };
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    });
+
     app.get("/users", async (req, res) => {
       let result;
       if (req.query.email) {
@@ -172,9 +178,7 @@ async function main() {
       res.send(categories);
     });
 
-    app.listen(port, () => {
-      console.log(`Server is listening on port ${port}`);
-    });
+    
   } finally {
   }
 
@@ -182,3 +186,11 @@ async function main() {
 }
 
 main().then(console.log).catch(console.error);
+
+app.get("/", (req, res) => {
+  res.send("Server is running...");
+});
+
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
